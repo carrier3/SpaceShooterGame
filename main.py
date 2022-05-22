@@ -98,6 +98,7 @@ def main():
     clock = pygame.time.Clock() # create clock
 
     lost = False
+    lost_count = 0
 
     def redraw_window():
         WIN.blit(BG,(0,0)) #draw te image starting at the top left corner
@@ -124,9 +125,17 @@ def main():
 
     while run:
         clock.tick(FPS) # make sure the game stays consistent on any device
+        redraw_window()
 
         if lives <= 0 or player.health <= 0:
             lost = True
+            lost_count += 1
+
+        if lost:
+            if lost_count > FPS * 3:
+                run = False # quit game
+            else:
+                continue
 
         # check to see if there are still enemies, if not, increase level
         if len(enemies) == 0:
@@ -162,6 +171,5 @@ def main():
                 lives -= 1
                 enemies.remove(enemy)
 
-        redraw_window()
 
 main()
