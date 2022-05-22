@@ -66,32 +66,38 @@ class Player(Ship):
 
 class Enemy(Ship):
     COLOR_MAP = {
-        "red": (RED_SPACE_SHIP, RED_LASER),
-        "green": (GREEN_SPACE_SHIP,GREEN_LASER),
-        "blue": (BLUE_SPACE_SHIP,BLUE_LASER)
-    }
+                "red": (RED_SPACE_SHIP, RED_LASER),
+                "green": (GREEN_SPACE_SHIP, GREEN_LASER),
+                "blue": (BLUE_SPACE_SHIP, BLUE_LASER)
+                }
 
     def __init__(self, x, y, color, health=100):
         super().__init__(x, y, health)
         self.ship_img, self.laser_img = self.COLOR_MAP[color]
         self.mask = pygame.mask.from_surface(self.ship_img)
 
-    def move(self,vel):
+    def move(self, vel):
         self.y += vel
 
 def main():
 
     run = True # dictates whether te while loop runs
     FPS = 60 # how many times per second the program checks for changes such as collisions or movement. Higher FPS makes game run faster, lower FPS makes game run slower
-    level = 1
+    level = 0
     lives = 5
     main_font = pygame.font.SysFont("comicsans",50)
+    lost_font = pygame.font.SysFont("comicsans",60)
+
+    enemies = [] # blank list of enemies
+    wave_length = 5
+    enemy_vel = 1 # speed of enemies
     player_vel = 5 # number of pixels to move
 
-    # Create a Ship
-    player = Player(300, 650)
+    player = Player(300, 650) # Create a Ship
 
     clock = pygame.time.Clock() # create clock
+
+    lost = False
 
     def redraw_window():
         WIN.blit(BG,(0,0)) #draw te image starting at the top left corner
@@ -103,14 +109,33 @@ def main():
         WIN.blit(lives_label,(10,10)) # left upper screen
         WIN.blit(level_label,(WIDTH - level_label.get_width() - 10, 10)) # right upper screen - dynamic
 
+        # for each enemy in the list, draw it on the screen
+        for enemy in enemies:
+            enemy.draw(WIN)
+
         # draw the player
         player.draw(WIN)
+
+        if lost:
+            lost_label = lost_font.render("You Lost!!",1,(255,255,255))
+            WIN.blit(lost_label, (WIDTH/2 - lost_label.get_width()/2, 350)) # position text in center of screen
 
         pygame.display.update()
 
     while run:
-        clock.tick(FPS) #make sure the game stays consistent on any device
-        redraw_window()
+        clock.tick(FPS) # make sure the game stays consistent on any device
+
+        if lives <= 0 or player.health <= 0:
+            lost = True
+
+        # check to see if there are still enemies, if not, increase level
+        if len(enemies) == 0:
+            level += 1
+            wave_length += 5
+            # spawn the list enemies into the game randomly
+            for i in range(wave_length):
+                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-1500, -100), random.choice(["red", "blue", "green"]))
+                enemies.append(enemy)
 
         # loop through all the events that pygame knows to check if event has occurred at timeframe of FPS
         for event in pygame.event.get():
@@ -129,5 +154,14 @@ def main():
             player.y -= player_vel
         if keys[pygame.K_s] and player.y + player_vel + player.get_height() < HEIGHT: #down
             player.y += player_vel
+
+        # loop to move the enemies from a copy [:] of list down screen and delete
+        for enemy in enemies[:]:
+            enemy.move(enemy_vel)
+            if enemy.y + enemy.get_height() > HEIGHT:
+                lives -= 1
+                enemies.remove(enemy)
+
+        redraw_window()
 
 main()
