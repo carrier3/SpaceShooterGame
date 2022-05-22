@@ -3,6 +3,13 @@ import os
 import time
 import random
 
+# Define width and height tuple for the screen
+WIDTH, HEIGHT = 750,750
+# Set up the pygame window and add the predefined tuple for the screen
+WIN = pygame.display.set_mode((WIDTH,HEIGHT))
+# Name the display
+pygame.display.set_caption("Space Shooter Game")
+
 # Load the Enemy ships
 RED_SPACE_SHIP = pygame.image.load(os.path.join("assets","pixel_ship_red_small.png"))
 GREEN_SPACE_SHIP = pygame.image.load(os.path.join("assets","pixel_ship_green_small.png"))
