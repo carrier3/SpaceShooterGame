@@ -49,6 +49,7 @@ def main():
     level = 1
     lives = 5
     main_font = pygame.font.SysFont("comicsans",50)
+    player_vel = 5 # number of pixels to move
 
     # Create a Ship
     ship = Ship(300, 650)
@@ -78,5 +79,18 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+
+        # returns a dictionary of all the keys and tells you whether they were pressed or not at the FPS timeframe
+        keys = pygame.key.get_pressed()
+
+        # create movement based on detected keys
+        if keys[pygame.K_a] and ship.x - player_vel > 0: #left
+            ship.x -= player_vel
+        if keys[pygame.K_d] and ship.x + player_vel + 50 < WIDTH: #right
+            ship.x += player_vel
+        if keys[pygame.K_w] and ship.y - player_vel > 0: #up
+            ship.y -= player_vel
+        if keys[pygame.K_s] and ship.y + player_vel + 50 < HEIGHT: #down
+            ship.y += player_vel
 
 main()
