@@ -125,8 +125,9 @@ class Player(Ship):
             else:
                 for obj in objs:
                     if laser.collision(obj): # check for object collision
-                        obj.remove(obj) # remove object of collision
-                        self.lasers.remove(laser) # remove the laser
+                        objs.remove(obj) # remove object of collision
+                        if laser in self.lasers:
+                            self.lasers.remove(laser) # remove the laser
 
     def draw(self,window):
         super().draw(window)
@@ -243,7 +244,7 @@ def main():
         # loop through all the events that pygame knows to check if event has occurred at timeframe of FPS
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
+                quit()
 
         # returns a dictionary of all the keys and tells you whether they were pressed or not at the FPS timeframe
         keys = pygame.key.get_pressed()
@@ -279,7 +280,23 @@ def main():
         player.move_lasers(-laser_vel, enemies)
 
 
+def main_menu():
+    title_font = pygame.font.SysFont("comicsans", 50)
+    run = True
+    while run:
+        WIN.blit(BG, (0,0))
+        title_label = title_font.render("Press the mouse to begin...",1,(255,255,255))
+        WIN.blit(title_label,(WIDTH/2 - title_label.get_width()/2,350))
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                main()
+    pygame.quit()
+
+
 #############################################################################################################
 
 
-main()
+main_menu()
